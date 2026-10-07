@@ -12,9 +12,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - run: rm -rf node_modules
       - run: npm install
-      - run: chmod +x node_modules/.bin/cap node_modules/.bin/capacitor || true
-      - run: npx @capacitor/cli sync android
+      - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
       - uses: actions/upload-artifact@v4
         with:
