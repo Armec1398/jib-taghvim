@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">jib-taghvim</string>
+    <string name="title_activity_main">jib-taghvim</string>
+    <string name="package_name">com.jibtaghvim.app</string>
+    <string name="custom_url_scheme">com.jibtaghvim.app</string>
+</resources>

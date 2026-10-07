@@ -1,0 +1,1 @@
+{"name":"jib-taghvim","version":"1.0.0","private":true,"scripts":{"build:apk":"npx cap sync android && cd android && .\\gradlew assembleDebug"},"dependencies":{"@capacitor/android":"^8.5.3","@capacitor/cli":"^8.5.3","@capacitor/core":"^8.5.3"}}
