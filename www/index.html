@@ -88,6 +88,24 @@ summary{cursor:pointer;font-size:13px;font-weight:700}
 .bartrack{background:var(--soft);border-radius:99px;height:11px;position:relative;overflow:hidden;border:1px solid var(--line)}
 .bartrack i{position:absolute;inset:0 auto 0 0;border-radius:99px}
 .legend{display:flex;gap:10px;font-size:11px;color:var(--mut);align-items:center}
+.day-detail-list{display:grid;gap:8px}
+.day-event{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;border:1px solid var(--line);background:var(--soft);border-radius:14px;padding:10px 12px;min-width:0}
+.day-event-main{min-width:0;flex:1}
+.day-event .t{font-size:14px;line-height:1.8;overflow-wrap:anywhere;white-space:normal}
+.day-event-meta{display:block;line-height:1.9;margin-top:3px}
+.day-event-action{flex-shrink:0;min-width:42px;min-height:40px}
+.day:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+@media(max-width:480px){
+ .wrap{padding:7px}.card{padding:11px;margin-bottom:8px}
+ .grid{gap:3px}.day{min-height:62px;padding:4px 1px;border-radius:10px}
+ .day .n{font-size:14px}.day .g{font-size:8px}
+ .lbl{font-size:8px;padding:1px;margin-top:2px;border-radius:5px}
+ .day .lbl{display:none}.day.sel .lbl{display:block}
+ .more{font-size:9px}
+ .day-event{padding:9px;gap:7px}
+ .day-event .t{font-size:13px}
+ .row:has(>.btn.grow){gap:6px}
+}
 </style>
 </head>
 <body>
@@ -292,13 +310,13 @@ for(var d=1;d<=len;d++){var list=byDay[d]||[];var hasG=list.some(function(e){ret
 var isFri=((shift+d-1)%7==6);
 var cls='day'+(viewY==TJ.jy&&viewM==TJ.jm&&d==TJ.jd?' today':'')+(d==selD&&viewY==selY&&viewM==selM?' sel':'')+(hasG?' has-g':'')+(hasI?' has-i':'')+(isFri?' fri':'');
 var gd2=d2g(j2d(viewY,viewM,d));
-var h='<div class="'+cls+'" onclick="selDay('+d+')"><div class="n">'+fa(d)+'</div><div class="g">'+fa(gd2.gd)+'/'+fa(gd2.gm)+'</div>';
+var h='<div class="'+cls+'" role="button" tabindex="0" aria-label="'+wdName(viewY,viewM,d)+' '+fa(d)+' '+MN[viewM]+(list.length?'، '+fa(list.length)+' رویداد':'')+'" onclick="selDay('+d+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selDay('+d+')}" ><div class="n">'+fa(d)+'</div><div class="g">'+fa(gd2.gd)+'/'+fa(gd2.gm)+'</div>';
 list.slice(0,2).forEach(function(e){var nm=e.it.title.length>9?e.it.title.slice(0,9)+'…':e.it.title;h+='<span class="lbl '+(e.type=='g'?'red':'green')+'">'+(e.type=='g'?'🔴 ':'🟢 ')+esc(nm)+' '+shortAmt(e.it.amount)+'</span>'});
 if(list.length>2)h+='<div class="more">+'+fa(list.length-2)+'</div>';
 g.innerHTML+=h+'</div>'}
 var dl=(selY==viewY&&selM==viewM)?(byDay[selD]||[]):[];
 document.getElementById('dayTitle').textContent=wdName(selY,selM,selD)+' '+fa(selD)+' '+MN[selM]+' • '+fa(dl.length)+' مورد';
-document.getElementById('dayDetail').innerHTML=dl.length?dl.map(function(e){var df=diffDays(e.y,e.m,e.d);return '<div class="item"><div><span class="pill '+(e.type=='g'?'red':'green')+'">'+(e.type=='g'?'🔴 قسط':'🟢 درآمد')+'</span><div class="t">'+esc(e.it.title)+'</div><span class="small">'+fa(e.it.amount)+' • '+(e.done?'انجام شد ✅':df<0?fa(-df)+' روز عقب ⚠️':df==0?'امروز! ⭐':fa(df)+' روز مانده')+'</span></div><div style="display:flex;gap:5px"><button class="btn ghost" onclick="toggleKey(\''+e.key+'\')">'+(e.done?'↩':'✓')+'</button></div></div>'}).join(''):'<span class="small">خلوته 🎉 با دکمه پایین چیزی ثبت کن.</span>';
+document.getElementById('dayDetail').innerHTML=dl.length?'<div class="day-detail-list">'+dl.map(function(e){var df=diffDays(e.y,e.m,e.d);return '<div class="day-event"><div class="day-event-main"><span class="pill '+(e.type=='g'?'red':'green')+'">'+(e.type=='g'?'🔴 قسط':'🟢 درآمد')+'</span><div class="t">'+esc(e.it.title)+'</div><span class="small day-event-meta">'+fa(e.it.amount)+' تومان • '+(e.done?'انجام شد ✅':df<0?fa(-df)+' روز عقب ⚠️':df==0?'امروز! ⭐':fa(df)+' روز مانده')+'</span></div><button class="btn ghost day-event-action" aria-label="'+(e.done?'لغو انجام':'علامت‌گذاری به‌عنوان انجام‌شده')+'" onclick="toggleKey(\''+e.key+'\')">'+(e.done?'↩':'✓')+'</button></div>'}).join('')+'</div>':'<span class="small">خلوته 🎉 با دکمه پایین چیزی ثبت کن.</span>';
 var upcoming=evs.filter(function(e){return !e.done}).sort(function(a,b){return diffDays(a.y,a.m,a.d)-diffDays(b.y,b.m,b.d)}).find(function(e){return diffDays(e.y,e.m,e.d)>=-365})||evs[0];
 var nc=document.getElementById('nextCount');
 if(upcoming){var df=diffDays(upcoming.y,upcoming.m,upcoming.d);document.getElementById('nextDot').style.background=upcoming.type=='g'?'var(--red)':'var(--green)';
